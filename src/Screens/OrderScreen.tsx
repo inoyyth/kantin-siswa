@@ -104,6 +104,7 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
         getListOrder(parse);
         userBalance(parse);
         detailUser(parse);
+        setRefreshing(false);
       })
       .catch(_err => {
         // any exception including data not found
@@ -214,6 +215,10 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
           renderItem={RenderOrderItem}
           keyExtractor={(_item: any, index: number) => `${index}`}
           refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            getStorage();
+          }}
           ListEmptyComponent={() => {
             return (
               <>
@@ -275,6 +280,7 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
         isVisible={showModalBarcode}
         onBackdropPress={() => {
           setShowModalBarcode(false);
+          getStorage();
         }}>
         <Dialog.Title
           titleStyle={{textAlign: 'center'}}
