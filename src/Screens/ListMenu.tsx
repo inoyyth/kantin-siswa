@@ -278,15 +278,38 @@ const ListMenu: FunctionComponent<Props> = (props: Props) => {
     );
   };
 
-  const RenderMenuList: any = () => {
-    return (
-      <View style={{marginBottom: 130}}>
+  useEffect(() => {
+    console.log('ORDER', order);
+  }, [recap, order]);
+
+  useEffect(() => {
+    getListMenu();
+  }, [getListMenu]);
+  return (
+    <SafeAreaProvider>
+      <HeaderRNE
+        backgroundColor="#00a1e9"
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <Icon name="arrowleft" type="antdesign" color="white" />
+          </TouchableOpacity>
+        }
+        centerComponent={{
+          text: `${data?.merchant_name}`,
+          style: {color: '#ffffff', fontWeight: '700', fontSize: 20},
+        }}
+        rightComponent={
+          <TouchableOpacity onPress={() => getRecapOrder()}>
+            <Icon name="checkmark-done" type="ionicon" color="white" />
+          </TouchableOpacity>
+        }
+      />
+      <SafeAreaView>
         <FlatList
           data={listMenu}
           renderItem={RenderMenuItem}
           keyExtractor={(item: MenusInterface, index: number) => `${index}`}
           refreshing={refreshing}
-          extraData={order}
           ListEmptyComponent={() => {
             return (
               <>
@@ -327,39 +350,8 @@ const ListMenu: FunctionComponent<Props> = (props: Props) => {
               </>
             );
           }}
+          style={{marginBottom: 80}}
         />
-      </View>
-    );
-  };
-
-  useEffect(() => {
-    console.log('ORDER', order);
-  }, [recap, order]);
-
-  useEffect(() => {
-    getListMenu();
-  }, [getListMenu]);
-  return (
-    <SafeAreaProvider>
-      <HeaderRNE
-        backgroundColor="#00a1e9"
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Icon name="arrowleft" type="antdesign" color="white" />
-          </TouchableOpacity>
-        }
-        centerComponent={{
-          text: `${data?.merchant_name}`,
-          style: {color: '#ffffff', fontWeight: '700', fontSize: 20},
-        }}
-        rightComponent={
-          <TouchableOpacity onPress={() => getRecapOrder()}>
-            <Icon name="checkmark-done" type="ionicon" color="white" />
-          </TouchableOpacity>
-        }
-      />
-      <SafeAreaView>
-        <RenderMenuList />
       </SafeAreaView>
       <Dialog
         isVisible={showRecapModal}
