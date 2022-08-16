@@ -64,7 +64,6 @@ const BottomNavigator: FunctionComponent = () => {
           tabBarStyle: {paddingBottom: 5},
           unmountOnBlur: true,
           tabBarHideOnKeyboard: true,
-          tabBarBadge: 10,
         }}
       />
       <Tab.Screen

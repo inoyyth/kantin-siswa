@@ -75,6 +75,13 @@ const ListMenu: FunctionComponent<Props> = (props: Props) => {
     };
     await createOrder(paramsOrder)
       .then(async (res: any) => {
+        if (res?.status === 400) {
+          Alert.alert(
+            'Saldo',
+            'Maaf saldo kamu tidak cukup, silahkan melakukan top up pada admin sekolah',
+          );
+          return false;
+        }
         if (isEmpty(res)) {
           Alert.alert('Error', 'Something went wrong!');
           return false;
