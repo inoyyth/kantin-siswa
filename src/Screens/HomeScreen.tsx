@@ -210,7 +210,6 @@ const HomeScreen: FunctionComponent<Props> = (props: Props) => {
 
   useEffect(() => {
     getStorage();
-    console.log('CRIIT');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

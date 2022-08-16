@@ -38,3 +38,28 @@ export async function getBalance(params: any) {
     return [];
   }
 }
+
+export async function updatePassword(params: any) {
+  console.log('params', params);
+  try {
+    const response = await fetch(
+      `${API_URL}/user/change-password/${params.user_id}`,
+      {
+        method: 'put',
+        body: JSON.stringify(params),
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return {
+      status: await response.status,
+      data: await response.json(),
+    };
+  } catch (_error: any) {
+    return [];
+  }
+}

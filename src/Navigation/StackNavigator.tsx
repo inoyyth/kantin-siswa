@@ -5,6 +5,8 @@ import OrderScreen from '../Screens/OrderScreen';
 import HistoryScreen from '../Screens/HistoryScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import ListMenu from '../Screens/ListMenu';
+import DetailProfileScreen from '../Screens/DetailProfileScreen';
+import ChangePasswordScreen from '../Screens/ChangePasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -53,9 +55,19 @@ const ProfileStackNavigator: FunctionComponent = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Order"
+        name="Profile"
         options={{headerShown: false}}
         component={ProfileScreen}
+      />
+      <Stack.Screen
+        name="DetailProfile"
+        options={{headerShown: false}}
+        component={DetailProfileScreen}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        options={{headerShown: false}}
+        component={ChangePasswordScreen}
       />
     </Stack.Navigator>
   );

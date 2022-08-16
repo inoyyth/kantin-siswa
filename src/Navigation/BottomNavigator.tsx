@@ -4,6 +4,7 @@ import {
   HistoryStackNavigator,
   MainStackNavigator,
   OrderStackNavigator,
+  ProfileStackNavigator,
 } from './StackNavigator';
 import {Icon} from '@rneui/themed';
 
@@ -95,7 +96,7 @@ const BottomNavigator: FunctionComponent = () => {
       />
       <Tab.Screen
         name="TabProfile"
-        component={HistoryStackNavigator}
+        component={ProfileStackNavigator}
         options={{
           headerShown: false,
           title: 'Profile',
