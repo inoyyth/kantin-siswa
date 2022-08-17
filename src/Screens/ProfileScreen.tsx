@@ -4,8 +4,8 @@ import {Alert, View} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import MainHeader from '../Components/MainHeader';
 import storage from '../Services/storage';
-import {getBalance, getDetailUser} from '../Services/user';
-import {Icon, ListItem} from '@rneui/themed';
+import {getBalance, getDetailUser, logout} from '../Services/user';
+import {Dialog, Icon, ListItem, Text} from '@rneui/themed';
 
 type Props = {
   navigation: any;
@@ -16,6 +16,7 @@ const ProfileScreen: FunctionComponent<Props> = (props: Props) => {
   const [storageData, setStorageData] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [balance, setBalance] = useState<any>(null);
+  const [showModalLogout, setShowModalLogout] = useState<boolean>(false);
 
   const list = [
     {
@@ -37,6 +38,22 @@ const ProfileScreen: FunctionComponent<Props> = (props: Props) => {
       navigation: '',
     },
   ];
+
+  const handleLogout: Function = async (): Promise<void> => {
+    await logout({
+      token: storageData.token,
+    })
+      .then(async () => {
+        await storage.remove({key: 'auth'});
+        setShowModalLogout(false);
+        navigation.navigate('Login');
+      })
+      .catch((_err: any) => {
+        Alert.alert('Error', 'Something went wrong!');
+      });
+
+    //
+  };
 
   const detailUser: Function = async (params: any): Promise<void> => {
     await getDetailUser({
@@ -120,6 +137,8 @@ const ProfileScreen: FunctionComponent<Props> = (props: Props) => {
                   data: user,
                   storage: storageData,
                 });
+              } else {
+                setShowModalLogout(true);
               }
             }}>
             <Icon name={item.icon} type={item.type} />
@@ -129,6 +148,19 @@ const ProfileScreen: FunctionComponent<Props> = (props: Props) => {
             <ListItem.Chevron />
           </ListItem>
         ))}
+      </View>
+      <View>
+        <Dialog isVisible={showModalLogout}>
+          <Dialog.Title title="Dialog Title" />
+          <Text>Kamu yakin akan logout?</Text>
+          <Dialog.Actions>
+            <Dialog.Button title="Ya" onPress={() => handleLogout()} />
+            <Dialog.Button
+              title="Tidak"
+              onPress={() => setShowModalLogout(false)}
+            />
+          </Dialog.Actions>
+        </Dialog>
       </View>
     </SafeAreaProvider>
   );

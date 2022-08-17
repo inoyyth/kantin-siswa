@@ -63,3 +63,23 @@ export async function updatePassword(params: any) {
     return [];
   }
 }
+
+export async function logout(params: any) {
+  try {
+    const response = await fetch(`${API_URL}/api/logout`, {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${params.token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return {
+      status: await response.status,
+      data: await response.json(),
+    };
+  } catch (_error: any) {
+    return [];
+  }
+}
