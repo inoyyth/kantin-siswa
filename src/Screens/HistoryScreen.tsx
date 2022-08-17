@@ -13,7 +13,7 @@ import MainHeader from '../Components/MainHeader';
 import storage from '../Services/storage';
 import {getBalance, getDetailUser} from '../Services/user';
 import moment from 'moment';
-import {getOrderHistory} from '../Services/order';
+import {getOrderHistory, getTopUpHistory} from '../Services/order';
 
 type Props = {
   navigation: any;
@@ -28,6 +28,29 @@ const HistoryScreen: FunctionComponent<Props> = (props: Props) => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [listOrder, setListOrder] = useState<any[]>([]);
+  const [listTopUp, setListTopUp] = useState<any[]>([]);
+
+  const handleTopUpList: Function = useCallback(
+    async (params: any): Promise<void> => {
+      await getTopUpHistory({
+        user_id: params.user_id,
+        token: params.token,
+        date: moment(date).format('YYYY-MM-DD'),
+      })
+        .then(async (res: any) => {
+          if (isEmpty(res)) {
+            Alert.alert('Error', 'Something went wrong!');
+            return false;
+          } else {
+            setListTopUp(res?.data?.data);
+          }
+        })
+        .catch((_err: any) => {
+          Alert.alert('Error', 'Something went wrong!');
+        });
+    },
+    [date],
+  );
 
   const handleOrderList: Function = useCallback(
     async (params: any): Promise<void> => {
@@ -107,6 +130,7 @@ const HistoryScreen: FunctionComponent<Props> = (props: Props) => {
         detailUser(parse);
         userBalance(parse);
         handleOrderList(parse);
+        handleTopUpList(parse);
       })
       .catch(_err => {
         // any exception including data not found
@@ -120,6 +144,38 @@ const HistoryScreen: FunctionComponent<Props> = (props: Props) => {
     getStorage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
+
+  const RenderTopUpItem: FunctionComponent = (orderItem: any) => {
+    const {item} = orderItem;
+    return (
+      <View
+        style={{
+          borderWidth: 1,
+          marginVertical: 10,
+          marginHorizontal: 5,
+          padding: 5,
+          borderBottomLeftRadius: 10,
+          borderBottomRightRadius: 10,
+        }}>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            backgroundColor: '#00a1e9',
+          }}>
+          <Text style={{color: '#ffffff', fontWeight: '700'}}>
+            {item.transaction_code}
+          </Text>
+          <Text style={{color: '#ffffff', fontWeight: '700'}}>TOPUP</Text>
+        </View>
+        <View style={{marginTop: 5}}>
+          <Text style={{fontWeight: '700'}}>Total: {item?.nominal}</Text>
+        </View>
+      </View>
+    );
+  };
 
   const RenderOrderItem: FunctionComponent = (orderItem: any) => {
     const {item} = orderItem;
@@ -264,6 +320,12 @@ const HistoryScreen: FunctionComponent<Props> = (props: Props) => {
                 </>
               );
             }}
+          />
+          <FlatList
+            data={listTopUp}
+            renderItem={RenderTopUpItem}
+            keyExtractor={(_item: any, index: number) => `${index}`}
+            extraData={listTopUp}
           />
         </View>
         <DatePicker
