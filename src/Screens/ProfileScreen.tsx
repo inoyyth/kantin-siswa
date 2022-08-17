@@ -151,7 +151,7 @@ const ProfileScreen: FunctionComponent<Props> = (props: Props) => {
       </View>
       <View>
         <Dialog isVisible={showModalLogout}>
-          <Dialog.Title title="Dialog Title" />
+          <Dialog.Title title="Logout" />
           <Text>Kamu yakin akan logout?</Text>
           <Dialog.Actions>
             <Dialog.Button title="Ya" onPress={() => handleLogout()} />
