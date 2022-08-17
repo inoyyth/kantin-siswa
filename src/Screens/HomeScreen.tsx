@@ -213,6 +213,27 @@ const HomeScreen: FunctionComponent<Props> = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    navigation.addListener('beforeRemove', (e: any) => {
+      // const action = e.data.action;
+
+      e.preventDefault();
+
+      // Alert.alert(
+      //   'Discard changes?',
+      //   'You have unsaved changes. Are you sure to discard them and leave the screen?',
+      //   [
+      //     {text: "Don't leave", style: 'cancel', onPress: () => {}},
+      //     {
+      //       text: 'Discard',
+      //       style: 'destructive',
+      //       onPress: () => navigation.dispatch(action),
+      //     },
+      //   ],
+      // );
+    });
+  }, [navigation]);
+
   return (
     <SafeAreaProvider>
       <MainHeader name={user?.name} sales={balance?.total} />

@@ -14,8 +14,10 @@ const Login: FunctionComponent<Props> = (props: Props) => {
   const {navigation} = props;
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   const handleLogin: Function = async (): Promise<void> => {
+    setLoadingButton(true);
     const grandAccessType: string = 'students';
     await checkAuth({
       email: email,
@@ -25,7 +27,6 @@ const Login: FunctionComponent<Props> = (props: Props) => {
       .then(async (res: any) => {
         if (res.status === 401) {
           Alert.alert('Warning', 'Username atau password salah!');
-          return false;
         } else if (res.status === 422) {
           let errorMessage = '';
           const data = res.data;
@@ -33,23 +34,24 @@ const Login: FunctionComponent<Props> = (props: Props) => {
             var i = Object.keys(data).indexOf(key) + 1;
             errorMessage += `${i}. ${key} Wajib diisi \n`;
           }
-
           Alert.alert('Warning', errorMessage);
         } else {
           if (isEmpty(res)) {
             Alert.alert('Error', 'Something went wrong!');
-            return false;
+          } else {
+            await storage.save({
+              key: 'auth',
+              data: JSON.stringify(res.data),
+              expires: res?.data?.expires_in,
+            });
+            navigation.navigate('TabNavigation');
           }
-          await storage.save({
-            key: 'auth',
-            data: JSON.stringify(res.data),
-            expires: res?.data?.expires_in,
-          });
-          navigation.navigate('TabNavigation');
         }
+        setLoadingButton(false);
       })
       .catch((_err: any) => {
         Alert.alert('Error', 'Something went wrong!');
+        setLoadingButton(false);
       });
   };
 
@@ -96,7 +98,11 @@ const Login: FunctionComponent<Props> = (props: Props) => {
           />
         </View>
         <View>
-          <Button size="md" onPress={() => handleLogin()}>
+          <Button
+            size="md"
+            onPress={() => handleLogin()}
+            loading={loadingButton}
+            disabled={loadingButton}>
             Login
           </Button>
         </View>
