@@ -26,7 +26,7 @@ export async function getMenuList(params: any) {
   try {
     const merchant_id = params?.merchant_id;
     const response = await fetch(
-      `${API_URL}/product/?page=1&per_page=100&sort_field=id&sort_order=desc&filterGroups[0][field]=merchant_id&filterGroups[0][filters][0][value]=${merchant_id}&filterGroups[0][filters][0][condition]=equal`,
+      `${API_URL}/product/?page=1&per_page=100&sort_field=title&sort_order=asc&filterGroups[0][field]=merchant_id&filterGroups[0][filters][0][value]=${merchant_id}&filterGroups[0][filters][0][condition]=equal`,
       {
         method: 'get',
         headers: {

@@ -144,7 +144,7 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
               justifyContent: 'space-between',
               flexDirection: 'row',
               borderBottomWidth: 1,
-              backgroundColor: '#59b300',
+              backgroundColor: '#00a1e9',
             }}>
             <Text style={{color: '#ffffff', fontWeight: '700'}}>
               {item.transaction_code}
