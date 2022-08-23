@@ -1,1 +1,1 @@
-export const API_URL = 'http://192.168.1.4:8083';
+export const API_URL = 'https://smkn65-jkt.sch.id/kantin-api';

@@ -1,4 +1,4 @@
-package com.kantinsiswa;
+package com.kantinsmkn65.siswa;
 
 import android.app.Application;
 import android.content.Context;
@@ -9,7 +9,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
-import com.kantinsiswa.newarchitecture.MainApplicationReactNativeHost;
+import com.kantinsmkn65.siswa.newarchitecture.MainApplicationReactNativeHost;
 import com.oblador.vectoricons.VectorIconsPackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -74,7 +74,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.kantinsiswa.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.kantinsmkn65.siswa.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

@@ -3,7 +3,7 @@ import {API_URL} from '../Config/apiConfig';
 
 export async function getOrderRecap(params: any) {
   try {
-    const response = await fetch(`${API_URL}/order/order-recap/`, {
+    const response = await fetch(`${API_URL}/order/order-recap`, {
       method: 'post',
       body: JSON.stringify(params.order),
       headers: {
@@ -26,7 +26,7 @@ export async function getOrderRecap(params: any) {
 export async function createOrder(params: any) {
   console.log(params);
   try {
-    const response = await fetch(`${API_URL}/order/`, {
+    const response = await fetch(`${API_URL}/order`, {
       method: 'post',
       body: JSON.stringify(params),
       headers: {

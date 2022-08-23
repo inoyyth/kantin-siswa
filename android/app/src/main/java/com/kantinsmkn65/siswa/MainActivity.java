@@ -1,4 +1,4 @@
-package com.kantinsiswa;
+package com.kantinsmkn65.siswa;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
