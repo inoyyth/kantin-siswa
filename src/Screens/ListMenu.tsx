@@ -375,17 +375,23 @@ const ListMenu: FunctionComponent<Props> = (props: Props) => {
             keyExtractor={(item: any, index: number) => `${index}`}
             renderItem={(items: any) => {
               const {item} = items;
+              const color = item?.isOutOfStock ? 'red' : '#000';
               return (
-                <View
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
+                <View style={{marginBottom: 10}}>
+                  <Text style={{fontSize: 10, color: color, fontWeight: '700'}}>
+                    {item.isOutOfStock ? 'Stock Tidak Cukup' : 'Tersedia'}
+                  </Text>
                   <Text>{item.product_name}</Text>
-                  <Text>@{item.price}</Text>
-                  <Text>{item.quantity}</Text>
-                  <Text>{item.total}</Text>
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text>@{item.price}</Text>
+                    <Text>{item.quantity}</Text>
+                    <Text>{item.total}</Text>
+                  </View>
                 </View>
               );
             }}
