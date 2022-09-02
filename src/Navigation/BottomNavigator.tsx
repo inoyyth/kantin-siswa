@@ -5,6 +5,7 @@ import {
   MainStackNavigator,
   OrderStackNavigator,
   ProfileStackNavigator,
+  ScannerStackNavigator,
 } from './StackNavigator';
 import {Icon} from '@rneui/themed';
 
@@ -65,6 +66,50 @@ const BottomNavigator: FunctionComponent = () => {
           tabBarStyle: {paddingBottom: 5},
           unmountOnBlur: true,
           tabBarHideOnKeyboard: true,
+        }}
+      />
+      <Tab.Screen
+        name="TabScanner"
+        component={ScannerStackNavigator}
+        options={{
+          headerShown: false,
+          title: 'Top Up',
+          tabBarIcon: (e: any) => (
+            <Icon
+              type="ant-design"
+              name="qrcode"
+              color={e.focused ? '#59b300' : e.color}
+              size={30}
+            />
+          ),
+          tabBarLabelStyle: {
+            fontSize: 10,
+            textTransform: 'uppercase',
+            fontWeight: '500',
+            color: '#a3a3c2',
+          },
+          tabBarStyle: {paddingBottom: 5},
+          tabBarIconStyle: {
+            height: 40,
+            width: 40,
+            position: 'absolute',
+            top: -13,
+            borderWidth: 1,
+            backgroundColor: '#ffffff',
+            borderColor: '#ffffff',
+            borderRadius: 10,
+            padding: 0,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 0.27,
+            shadowRadius: 4.65,
+
+            elevation: 3,
+          },
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen

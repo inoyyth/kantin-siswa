@@ -11,6 +11,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
 import com.kantinsmkn65.siswa.newarchitecture.MainApplicationReactNativeHost;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.horcrux.svg.SvgPackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 

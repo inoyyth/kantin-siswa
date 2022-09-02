@@ -7,6 +7,7 @@ import ProfileScreen from '../Screens/ProfileScreen';
 import ListMenu from '../Screens/ListMenu';
 import DetailProfileScreen from '../Screens/DetailProfileScreen';
 import ChangePasswordScreen from '../Screens/ChangePasswordScreen';
+import ScannerScreen from '../Screens/ScannerScreen';
 
 const Stack = createStackNavigator();
 
@@ -73,9 +74,22 @@ const ProfileStackNavigator: FunctionComponent = () => {
   );
 };
 
+const ScannerStackNavigator: FunctionComponent = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Scanner"
+        options={{headerShown: false}}
+        component={ScannerScreen}
+      />
+    </Stack.Navigator>
+  );
+};
+
 export {
   MainStackNavigator,
   OrderStackNavigator,
   HistoryStackNavigator,
   ProfileStackNavigator,
+  ScannerStackNavigator,
 };
