@@ -1,4 +1,4 @@
-import {Dialog, Skeleton, Text} from '@rneui/themed';
+import {Button, Dialog, Skeleton, Text} from '@rneui/themed';
 import {isEmpty} from 'lodash';
 import React, {FunctionComponent, useEffect, useState} from 'react';
 import {
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import MainHeader from '../Components/MainHeader';
-import {getOrderAllOrder} from '../Services/order';
+import {getOrderAllOrder, updateStatus} from '../Services/order';
 import storage from '../Services/storage';
 import {getBalance, getDetailUser} from '../Services/user';
 import QRCode from 'react-native-qrcode-svg';
@@ -21,6 +21,7 @@ type Props = {
 
 const OrderScreen: FunctionComponent<Props> = (props: Props) => {
   const {navigation} = props;
+  const [storageData, setStorageData] = useState<any>(null);
   const [listOrder, setListOrder] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [user, setUser] = useState<any>(null);
@@ -28,6 +29,33 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
   const [showModalBarcode, setShowModalBarcode] = useState<boolean>(false);
   const [barcodeValue, setBarcodeValue] = useState<number>(0);
   const [orderNumber, setOrderNumber] = useState<string>('');
+  const [showDialogCancel, setShowDialogCancel] = useState<boolean>(false);
+  const [transactionCode, setTransactionCode] = useState<string>('');
+  const [orderId, setOrderId] = useState<string>('');
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+
+  const handleCancelOrder: Function = async () => {
+    setButtonLoading(true);
+    await updateStatus({
+      orderId: orderId,
+      token: storageData.token,
+      status: 'CANCEL',
+    })
+      .then(async (res: any) => {
+        if (isEmpty(res)) {
+          Alert.alert('Error', 'Something went wrong!');
+          return false;
+        } else {
+          setButtonLoading(false);
+          setShowDialogCancel(false);
+          getStorage();
+        }
+      })
+      .catch((_err: any) => {
+        setButtonLoading(false);
+        Alert.alert('Error', 'Something went wrong!');
+      });
+  };
 
   const getListOrder: Function = async (params: any): Promise<void> => {
     setRefreshing(true);
@@ -101,6 +129,7 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
       })
       .then(ret => {
         const parse = JSON.parse(ret);
+        setStorageData(parse);
         getListOrder(parse);
         userBalance(parse);
         detailUser(parse);
@@ -122,11 +151,25 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
 
   const RenderOrderItem: FunctionComponent = (orderItem: any) => {
     const {item} = orderItem;
+    let textColor = 'white';
+    if (item.status === 'CANCEL') {
+      textColor = 'red';
+    }
+    if (item.status === 'SUCCESS') {
+      textColor = '#00ff00';
+    }
     return (
       <TouchableOpacity
-        onLongPress={() => {
+        onPress={() => {
           if (item.status === 'READY') {
             showBarcode(item);
+          }
+        }}
+        onLongPress={() => {
+          if (item.status === 'READY') {
+            setTransactionCode(item?.transaction_code);
+            setOrderId(item?.id);
+            setShowDialogCancel(true);
           }
         }}>
         <View
@@ -149,11 +192,16 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
             <Text style={{color: '#ffffff', fontWeight: '700'}}>
               {item.transaction_code}
             </Text>
-            <Text style={{color: '#ffffff', fontWeight: '700'}}>
+            <Text style={{color: textColor, fontWeight: '700'}}>
               {item?.status}
             </Text>
           </View>
-          <View style={{marginTop: 5}}>
+          <View style={{marginTop: 1}}>
+            <Text style={{fontWeight: '700', fontSize: 12, textAlign: 'right'}}>
+              {item?.merchant?.merchant_name}
+            </Text>
+          </View>
+          <View style={{marginTop: 1}}>
             <Text style={{fontWeight: '700'}}>Menu:</Text>
           </View>
           {item?.order_detail.map((val: any, index: number) => {
@@ -294,6 +342,47 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
           }}>
           <QRCode value={`${barcodeValue}`} logoSize={30} />
           <Text style={{marginTop: 5}}>{orderNumber}</Text>
+        </View>
+      </Dialog>
+      <Dialog
+        isVisible={showDialogCancel}
+        onBackdropPress={() => {
+          setShowDialogCancel(false);
+        }}>
+        <Dialog.Title
+          titleStyle={{textAlign: 'center'}}
+          title={`Batalkan Order ${transactionCode}`}
+        />
+        <View
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <View style={{display: 'flex', flexDirection: 'row'}}>
+            <View style={{margin: 5}}>
+              <Button
+                color="primary"
+                loading={buttonLoading}
+                disabled={buttonLoading}
+                onPress={() => {
+                  setShowDialogCancel(false);
+                }}>
+                Tidak
+              </Button>
+            </View>
+            <View style={{margin: 5}}>
+              <Button
+                color="error"
+                loading={buttonLoading}
+                disabled={buttonLoading}
+                onPress={() => {
+                  handleCancelOrder();
+                }}>
+                Ya
+              </Button>
+            </View>
+          </View>
         </View>
       </Dialog>
     </SafeAreaProvider>

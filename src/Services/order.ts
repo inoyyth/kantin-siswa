@@ -115,3 +115,27 @@ export async function getTopUpHistory(params: any) {
     return [];
   }
 }
+
+export async function updateStatus(params: any) {
+  try {
+    const response = await fetch(
+      `${API_URL}/update-status-order/${params.orderId}`,
+      {
+        method: 'put',
+        body: JSON.stringify(params),
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return {
+      status: await response.status,
+      data: await response.json(),
+    };
+  } catch (_error: any) {
+    return [];
+  }
+}

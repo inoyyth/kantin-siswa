@@ -179,6 +179,7 @@ const HistoryScreen: FunctionComponent<Props> = (props: Props) => {
 
   const RenderOrderItem: FunctionComponent = (orderItem: any) => {
     const {item} = orderItem;
+    const textColor = item.status === 'CANCEL' ? 'red' : 'white';
     return (
       <View
         style={{
@@ -200,11 +201,16 @@ const HistoryScreen: FunctionComponent<Props> = (props: Props) => {
           <Text style={{color: '#ffffff', fontWeight: '700'}}>
             {item.transaction_code}
           </Text>
-          <Text style={{color: '#ffffff', fontWeight: '700'}}>
+          <Text style={{color: textColor, fontWeight: '700'}}>
             {item?.status}
           </Text>
         </View>
-        <View style={{marginTop: 5}}>
+        <View style={{marginTop: 1}}>
+          <Text style={{fontWeight: '700', fontSize: 12, textAlign: 'right'}}>
+            {item?.merchant?.merchant_name}
+          </Text>
+        </View>
+        <View style={{marginTop: 1}}>
           <Text style={{fontWeight: '700'}}>Menu:</Text>
         </View>
         {item?.order_detail.map((val: any, index: number) => {

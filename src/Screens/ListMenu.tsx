@@ -185,12 +185,14 @@ const ListMenu: FunctionComponent<Props> = (props: Props) => {
       <>
         <View style={menuStyles.container}>
           <View style={menuStyles.row}>
-            <Image
-              style={{width: 100, height: 100, flexGrow: 1}}
-              source={{uri: item.image}}
-              resizeMode="cover"
-            />
-            <View style={{paddingHorizontal: 5, flexGrow: 2}}>
+            <View style={{width: '30%'}}>
+              <Image
+                style={{width: 100, height: 100}}
+                source={{uri: item.image}}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={{paddingHorizontal: 5, width: '55%'}}>
               <Text style={{fontSize: 17, fontWeight: '700', color: '#59b300'}}>
                 {item.title}
               </Text>
@@ -227,7 +229,7 @@ const ListMenu: FunctionComponent<Props> = (props: Props) => {
                 <Text style={{textAlign: 'justify'}}>{item?.description}</Text>
               </View>
             </View>
-            <View style={{flexGrow: 1}}>
+            <View style={{width: '15%'}}>
               <View
                 style={{
                   width: '100%',
