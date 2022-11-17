@@ -1,19 +1,27 @@
-import {Button, Dialog, Skeleton, Text} from '@rneui/themed';
+import {Button, Dialog, Icon, Skeleton, Text} from '@rneui/themed';
 import {isEmpty} from 'lodash';
-import React, {FunctionComponent, useEffect, useState} from 'react';
+import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   FlatList,
   SafeAreaView,
+  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import MainHeader from '../Components/MainHeader';
-import {getOrderAllOrder, updateStatus} from '../Services/order';
+import {
+  getOrderAllOrder,
+  updateStatus,
+  updateStatusByScan,
+} from '../Services/order';
 import storage from '../Services/storage';
 import {getBalance, getDetailUser} from '../Services/user';
-import QRCode from 'react-native-qrcode-svg';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import {RNCamera} from 'react-native-camera';
+import moment from 'moment';
+import 'moment/locale/id';
 
 type Props = {
   navigation: any;
@@ -21,6 +29,7 @@ type Props = {
 
 const OrderScreen: FunctionComponent<Props> = (props: Props) => {
   const {navigation} = props;
+  const scanner = useRef(null);
   const [storageData, setStorageData] = useState<any>(null);
   const [listOrder, setListOrder] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -33,6 +42,42 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
   const [transactionCode, setTransactionCode] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+  const [scanSuccess, setScanSuccess] = useState<boolean>(false);
+  const [detailOrder, setDetailOrder] = useState<any>(null);
+
+  const onSuccess = async (e: any) => {
+    setShowModalBarcode(false);
+    console.log('orderId', barcodeValue);
+    console.log(e);
+    if (!isEmpty(e.data)) {
+      const merchantId = e?.data;
+      await updateStatusByScan({
+        merchant_id: merchantId,
+        orderId: barcodeValue,
+        status: 'SUCCESS',
+        token: storageData.token,
+      })
+        .then(async (res: any) => {
+          console.log('res', res);
+          if (isEmpty(res)) {
+            Alert.alert('Error', 'Something went wrong!');
+            return false;
+          } else if (res.status === 404) {
+            Alert.alert('Error', 'Data tidak valid!');
+            return false;
+          } else if (res.status === 422) {
+            Alert.alert('Error', 'Voucher sudah digunakan!');
+            return false;
+          } else {
+            setScanSuccess(true);
+            getStorage();
+          }
+        })
+        .catch((_err: any) => {
+          Alert.alert('Error', 'Something went wrong!');
+        });
+    }
+  };
 
   const handleCancelOrder: Function = async () => {
     setButtonLoading(true);
@@ -147,6 +192,7 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
     setBarcodeValue(orderValue?.id);
     setOrderNumber(orderValue?.transaction_code);
     setShowModalBarcode(true);
+    setDetailOrder(orderValue);
   };
 
   const RenderOrderItem: FunctionComponent = (orderItem: any) => {
@@ -196,7 +242,16 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
               {item?.status}
             </Text>
           </View>
-          <View style={{marginTop: 1}}>
+          <View
+            style={{
+              marginTop: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <Text style={{fontWeight: '700', fontSize: 12, textAlign: 'left'}}>
+              {item?.created_at}
+            </Text>
             <Text style={{fontWeight: '700', fontSize: 12, textAlign: 'right'}}>
               {item?.merchant?.merchant_name}
             </Text>
@@ -339,9 +394,25 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            height: '40%',
+            width: '100%',
+            top: 50,
           }}>
-          <QRCode value={`${barcodeValue}`} logoSize={30} />
-          <Text style={{marginTop: 5}}>{orderNumber}</Text>
+          <QRCodeScanner
+            ref={scanner}
+            reactivate
+            showMarker
+            onRead={(e: any) => onSuccess(e)}
+            flashMode={RNCamera.Constants.FlashMode.auto}
+            containerStyle={{position: 'relative', height: 100}}
+            cameraStyle={{width: 200, left: 96, top: -100}}
+          />
+          <View>
+            <Text style={styles.centerText}>
+              Merchant: {detailOrder?.merchant?.merchant_name}
+            </Text>
+            <Text style={styles.centerText}>Order Id: {orderNumber}</Text>
+          </View>
         </View>
       </Dialog>
       <Dialog
@@ -385,8 +456,105 @@ const OrderScreen: FunctionComponent<Props> = (props: Props) => {
           </View>
         </View>
       </Dialog>
+      <Dialog
+        isVisible={scanSuccess}
+        onBackdropPress={() => setScanSuccess(false)}>
+        <Dialog.Title title="Proses Bayar Sukses" />
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 5,
+            flexGrow: 1,
+          }}>
+          <Icon name="checkcircle" type="antdesign" />
+        </View>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+          }}>
+          <Text style={{fontWeight: 'bold', fontSize: 16}}>
+            {detailOrder?.merchant?.merchant_name}
+          </Text>
+        </View>
+        <View style={{marginTop: 5}}>
+          <Text style={{fontWeight: 'bold'}}>Order Detail</Text>
+        </View>
+        {detailOrder &&
+          detailOrder?.order_detail.map((val: any, i: number) => {
+            return (
+              <View
+                key={i}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                }}>
+                <View style={{width: '50%'}}>
+                  <Text>{val?.product?.title}</Text>
+                </View>
+                <View style={{width: '10%'}}>
+                  <Text>{val?.quantity}</Text>
+                </View>
+                <View style={{width: '20%'}}>
+                  <Text style={{textAlign: 'right'}}>
+                    @{val?.product?.price}
+                  </Text>
+                </View>
+                <View style={{width: '20%'}}>
+                  <Text style={{textAlign: 'right'}}>{val?.nominal}</Text>
+                </View>
+              </View>
+            );
+          })}
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            borderTopWidth: 1,
+          }}>
+          <View style={{width: '50%'}}>
+            <Text style={{textAlign: 'center', fontWeight: '700'}}>
+              Total:{' '}
+            </Text>
+          </View>
+          <View style={{width: '10%'}}>
+            <Text style={{fontWeight: '700'}}>{detailOrder?.total_item}</Text>
+          </View>
+          <View style={{width: '20%'}} />
+          <View style={{width: '20%'}}>
+            <Text style={{textAlign: 'right', fontWeight: '700'}}>
+              {detailOrder?.total}
+            </Text>
+          </View>
+        </View>
+        <View style={{marginTop: 10}}>
+          <Text style={{fontWeight: 'bold', fontSize: 12}}>
+            waktu bayar: {moment().format('dddd, D MMMM YYYY HH:mm:ss')}
+          </Text>
+        </View>
+      </Dialog>
     </SafeAreaProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  centerText: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  textBold: {
+    fontWeight: '500',
+    color: '#000',
+  },
+  buttonText: {
+    fontSize: 21,
+    color: 'rgb(0,122,255)',
+  },
+  buttonTouchable: {
+    padding: 16,
+  },
+});
 
 export default OrderScreen;

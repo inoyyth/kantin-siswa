@@ -4,6 +4,7 @@ import {Alert, View} from 'react-native';
 import {checkAuth} from '../Services/login';
 import storage from '../Services/storage';
 import {isEmpty} from 'lodash';
+import {Text} from '@rneui/base';
 
 type Props = {
   navigation: any;
@@ -106,6 +107,9 @@ const Login: FunctionComponent<Props> = (props: Props) => {
             Login
           </Button>
         </View>
+      </View>
+      <View>
+        <Text>version 1.3.0</Text>
       </View>
     </View>
   );
